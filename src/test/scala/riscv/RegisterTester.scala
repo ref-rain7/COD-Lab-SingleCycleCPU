@@ -4,12 +4,16 @@ import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 import scala.util._
 import chisel3.util._
 
-class RegisterTester(c: RegisterFile) extends PeekPokeTester(c) {
-    def readExpect1(addr: Int, value: Int): Unit = {
+class RegisterTester extends ChiselFlatSpec {
+    Driver(() => new RegisterFile()) { c => new RegisterUnitTester(c) }
+}
+
+class RegisterUnitTester(c: RegisterFile) extends PeekPokeTester(c) {
+    def readExpect1(addr: Int, value: Long): Unit = {
         poke(c.io.raddr1, addr)
         expect(c.io.rdata1, value)
     }
-    def readExpect2(addr: Int, value: Int): Unit = {
+    def readExpect2(addr: Int, value: Long): Unit = {
         poke(c.io.raddr2, addr)
         expect(c.io.rdata2, value)
     }
@@ -21,7 +25,7 @@ class RegisterTester(c: RegisterFile) extends PeekPokeTester(c) {
         poke(c.io.wen, 0)
     }
 
-    val randomSeq = Seq.fill(32){Random.nextInt(Int.MaxValue)}
+    val randomSeq = Seq.fill(32){0xffffffffL & Random.nextLong()}
     for (i <- 0 until 32) {
         write(addr = i, value = randomSeq(i))
     }
