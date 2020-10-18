@@ -4,18 +4,22 @@ import chisel3._
 import chisel3.util._
 import scala.collection._
 
-class BarrelShifter extends Module {
-    val io = IO(new Bundle {
-        val op = Input(UInt(2.W))
-        val in = Input(UInt(32.W))
-        val shamt = Input(UInt(5.W))
-        val out = Output(UInt(32.W))
-    })
-
+object BarrelShifter {
     val SLL = "b00".U
     val SRL = "b01".U
     val SRA = "b10".U
     val ROR = "b11".U
+}
+
+import BarrelShifter._
+
+class BarrelShifter extends Module {
+    val io = IO(new Bundle {
+        val in = Input(UInt(32.W))
+        val shamt = Input(UInt(5.W))
+        val op = Input(UInt(2.W))
+        val out = Output(UInt(32.W))
+    })
 
     private val shift = Wire(Vec(6, UInt(32.W)))
     shift(0) := io.in
@@ -25,7 +29,7 @@ class BarrelShifter extends Module {
         val d = 1 << (i-1)
         shift(i) := Mux(io.shamt(i-1) === false.B, shift(i - 1),
             MuxLookup (io.op, io.in,
-                Array(
+                Seq (
                     SLL -> Cat(shift(i-1)(31-d, 0), 0.U(d.W)),
                     SRL -> Cat(0.U(d.W), shift(i-1)(31, d)),
                     SRA -> Cat(Fill(d, io.in(31)), shift(i-1)(31, d)),

@@ -17,12 +17,10 @@ class RegisterFile(w:Int = 32) extends Module {
 
     val reg = RegInit(VecInit(Seq.fill(32)(0.U(w.W))))
 
-    when (io.wen /*&& io.waddr =/= 0.U(5.W)*/) {
+    when (io.wen) {
         reg(io.waddr) := io.wdata
     }
 
     io.rdata1 := Mux(io.raddr1 === 0.U(5.W), 0.U(w.W), reg(io.raddr1))
     io.rdata2 := Mux(io.raddr2 === 0.U(5.W), 0.U(w.W), reg(io.raddr2))
-    //io.rdata1 := reg(io.raddr1)
-    //io.rdata2 := reg(io.raddr2)
 }
