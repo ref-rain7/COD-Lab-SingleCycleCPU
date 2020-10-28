@@ -7,8 +7,8 @@ import scala.collection._
 object BarrelShifter {
     val SLL = "b00".U
     val SRL = "b01".U
-    val SRA = "b10".U
-    val ROR = "b11".U
+    val SRA = "b11".U
+    val ROR = "b10".U
 }
 
 import BarrelShifter._
@@ -28,14 +28,12 @@ class BarrelShifter extends Module {
     for (i <- 1 to 5) {
         val d = 1 << (i-1)
         shift(i) := Mux(io.shamt(i-1) === false.B, shift(i - 1),
-            MuxLookup (io.op, io.in,
-                Seq (
-                    SLL -> Cat(shift(i-1)(31-d, 0), 0.U(d.W)),
-                    SRL -> Cat(0.U(d.W), shift(i-1)(31, d)),
-                    SRA -> Cat(Fill(d, io.in(31)), shift(i-1)(31, d)),
-                    ROR -> Cat(shift(i-1)(d-1, 0), shift(i-1)(31, d))
-                )
-            )
+            MuxLookup (io.op, io.in, Seq (
+                SLL -> Cat(shift(i-1)(31-d, 0), 0.U(d.W)),
+                SRL -> Cat(0.U(d.W), shift(i-1)(31, d)),
+                SRA -> Cat(Fill(d, io.in(31)), shift(i-1)(31, d)),
+                ROR -> Cat(shift(i-1)(d-1, 0), shift(i-1)(31, d))
+            ))
         )
     }
 }

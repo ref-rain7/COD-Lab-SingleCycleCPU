@@ -13,8 +13,8 @@ class ShifterUnitTester(c : BarrelShifter) extends PeekPokeTester(c) {
         val t: Long = op match {
             case 0 => in << shamt
             case 1 => in >>> shamt
-            case 2 => in >> shamt
-            case 3 => in << (32 - shamt) | in >>> shamt
+            case 3 => in >> shamt
+            case 2 => in << (32 - shamt) | in >>> shamt
         }
         return t & 0xffffffffL
     }
