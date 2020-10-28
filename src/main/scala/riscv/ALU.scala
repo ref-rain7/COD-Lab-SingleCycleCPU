@@ -5,19 +5,18 @@ import chisel3.util._
 import scala.collection._
 
 object ALU {
-    val ADD = 0.U(4.W)
-    val SUB = 1.U(4.W)
+    val ADD  = "b0000".U
+    val SUB  = "b1000".U
+    val SLL  = "b0001".U
+    val SLT  = "b0010".U
+    val SLTU = "b0011".U
+    val XOR  = "b0100".U
+    val SRL  = "b0101".U
+    val SRA  = "b1101".U
+    val OR   = "b0110".U
+    val AND  = "b0111".U
 
-    val SLT = 2.U(4.W)
-    val SLTU = 3.U(4.W)
-
-    val SLL = 4.U(4.W)
-    val SRL = 5.U(4.W)
-    val SRA = 6.U(4.W)
-
-    val XOR = 7.U(4.W)
-    val OR = 8.U(4.W)
-    val AND = 9.U(4.W)
+    val COPY_B = "b1111".U
 }
 
 import ALU._
@@ -33,29 +32,22 @@ class ALU extends Module {
     var shifter = Module(new BarrelShifter)
     shifter.io.in := io.a
     shifter.io.shamt := io.b(4, 0)
+    shifter.io.op := io.op(3, 2)
 
-    shifter.io.op := MuxLookup (io.op, 0.U(4.W),
-        Seq (
-            SLL -> BarrelShifter.SLL,
-            SRL -> BarrelShifter.SRL,
-            SRA -> BarrelShifter.SRA
-        )
-    )
+    io.out := MuxLookup (io.op, io.a, Seq (
+        ADD -> (io.a + io.b),
+        SUB -> (io.a - io.b),
+        OR -> (io.a | io.b),
+        AND -> (io.a & io.b),
+        XOR -> (io.a ^ io.b),
 
-    io.out := MuxLookup (io.op, io.a,
-        Seq (
-            ADD -> (io.a + io.b),
-            SUB -> (io.a - io.b),
-            OR -> (io.a | io.b),
-            AND -> (io.a & io.b),
-            XOR -> (io.a ^ io.b),
+        SLT -> Cat(0.U(31.W), (io.a.asSInt < io.b.asSInt)),
+        SLTU -> Cat(0.U(31.W), (io.a < io.b)),
 
-            SLT -> Cat(0.U(31.W), (io.a.asSInt < io.b.asSInt)),
-            SLTU -> Cat(0.U(31.W), (io.a < io.b)),
+        SLL -> shifter.io.out,
+        SRL -> shifter.io.out,
+        SRA -> shifter.io.out,
 
-            SLL -> shifter.io.out,
-            SRL -> shifter.io.out,
-            SRA -> shifter.io.out
-        )
-    )
+        COPY_B -> io.b
+    ))
 }
