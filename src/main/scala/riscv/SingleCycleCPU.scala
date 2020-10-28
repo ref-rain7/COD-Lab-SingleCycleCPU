@@ -72,6 +72,4 @@ class SingleCycleCPU extends Module {
         B_SEL_IMM -> imm.io.out
     ))
 
-//    printf("\timm: %d, sel: %d\n", imm.io.out, ctrl.io.immSel)
-//    printf("\tcmp: a:%d, b:%d\n", reg.io.rdata1, reg.io.rdata2)
 }
