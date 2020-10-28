@@ -22,7 +22,7 @@ object Controller {
     val B_SEL_IMM = 1.U(1.W)
 
     val REG_WRDATA_SEL_ALU = 0.U(1.W)
-    val REG_WRDATA_SEL_PC_PLUS4 = 1.U(1.W) // pc + 4, exactly
+    val REG_WRDATA_SEL_PC_PLUS4 = 1.U(1.W)
 }
 
 import Instruction._
