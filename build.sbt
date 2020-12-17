@@ -1,4 +1,4 @@
-name := "COD_CourseLab"
+name := "COD-Lab-SingleCycleCPU"
 
 version := "0.1"
 
